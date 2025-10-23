@@ -7,6 +7,7 @@ A comprehensive IoT sensor system using ESP32 with multiple sensors for health m
 - **ESP32 Development Board**
 - **MAX30102** - Heart Rate & SpO2 Sensor
 - **BMP280** - Temperature, Pressure & Humidity Sensor
+- **DHT11** - Temperature & Humidity Sensor
 - **Flame Sensor** - Fire Detection
 - **OLED Display (SSD1306)** - 128x64 I2C Display
 - **Buzzer** - Audio Alert System
@@ -14,7 +15,8 @@ A comprehensive IoT sensor system using ESP32 with multiple sensors for health m
 ## Features
 
 - Real-time heart rate and SpO2 monitoring
-- Environmental sensing (temperature, pressure, humidity)
+- Dual temperature and humidity sensing (BMP280 + DHT11)
+- Environmental sensing (pressure from BMP280)
 - Fire detection with immediate buzzer alert
 - OLED display showing all sensor readings
 - MQTT data publishing to HiveMQ broker
@@ -29,10 +31,11 @@ ESP32 Pin Connections:
 ┌─────────────────┐
 │       ESP32     │
 ├─────────────────┤
-│ 3.3V  ──────────┤─── VCC (MAX30102, BMP280, OLED, Flame Sensor)
+│ 3.3V  ──────────┤─── VCC (MAX30102, BMP280, OLED, Flame Sensor, DHT11)
 │ GND   ──────────┤─── GND (All components)
 │ GPIO21 ─────────┤─── SDA (I2C Data - MAX30102, BMP280, OLED)
 │ GPIO22 ─────────┤─── SCL (I2C Clock - MAX30102, BMP280, OLED)
+│ GPIO26 ─────────┤─── Data (DHT11 Data Pin)
 │ GPIO34 ─────────┤─── DO (Flame Sensor Digital Output)
 │ GPIO25 ─────────┤─── + (Buzzer Positive)
 │ GND   ──────────┤─── - (Buzzer Negative)
@@ -57,6 +60,11 @@ Component Details:
 │ ├─ GND → GND                                                │
 │ ├─ SDA → GPIO21                                             │
 │ └─ SCL → GPIO22                                             │
+├─────────────────────────────────────────────────────────────┤
+│ DHT11 Temperature & Humidity Sensor                         │
+│ ├─ VCC → 3.3V                                               │
+│ ├─ GND → GND                                                │
+│ └─ Data → GPIO26                                            │
 ├─────────────────────────────────────────────────────────────┤
 │ Flame Sensor                                                │
 │ ├─ VCC → 3.3V                                               │
@@ -85,7 +93,11 @@ Install the following libraries through Arduino IDE Library Manager:
    - Search for "Adafruit BME280 Library"
    - Install by Adafruit
 
-4. **PubSubClient**
+4. **Adafruit DHT Sensor Library**
+   - Search for "Adafruit DHT Sensor Library"
+   - Install by Adafruit
+
+5. **PubSubClient**
    - Search for "PubSubClient"
    - Install by Nick O'Leary
 
@@ -122,9 +134,11 @@ The system automatically connects to HiveMQ broker:
 
 The system publishes data to the following topics:
 
-- `sensors/temperature` - Temperature readings (°C)
-- `sensors/pressure` - Pressure readings (hPa)
-- `sensors/humidity` - Humidity readings (%)
+- `sensors/temperature` - BMP280 Temperature readings (°C)
+- `sensors/pressure` - BMP280 Pressure readings (hPa)
+- `sensors/humidity` - BMP280 Humidity readings (%)
+- `sensors/dht11_temperature` - DHT11 Temperature readings (°C)
+- `sensors/dht11_humidity` - DHT11 Humidity readings (%)
 - `sensors/heartrate` - Heart rate (BPM)
 - `sensors/spo2` - Blood oxygen saturation (%)
 - `sensors/flame` - Flame detection status
@@ -136,15 +150,20 @@ The system publishes data to the following topics:
 Each sensor publishes its value as a simple string:
 ```
 sensors/temperature: "23.5"
+sensors/dht11_temperature: "23.2"
+sensors/humidity: "45.2"
+sensors/dht11_humidity: "44.8"
 sensors/heartrate: "72"
 ```
 
 ### Combined JSON Data (sensors/status)
 ```json
 {
-  "temperature": 23.5,
-  "pressure": 1013.25,
-  "humidity": 45.2,
+  "bmp280_temperature": 23.5,
+  "bmp280_pressure": 1013.25,
+  "bmp280_humidity": 45.2,
+  "dht11_temperature": 23.2,
+  "dht11_humidity": 44.8,
   "heartrate": 72,
   "spo2": 98,
   "flame_detected": false,
@@ -190,12 +209,18 @@ mosquitto_sub -h broker.hivemq.com -p 1883 -t "sensors/status"
    - Verify power connections
    - Some displays use 0x3D address
 
-4. **WiFi Connection Failed**
+4. **DHT11 Not Working**
+   - Check data pin connection (GPIO26)
+   - Verify power supply (3.3V)
+   - Ensure proper pull-up resistor (4.7kΩ recommended)
+   - Check for loose connections
+
+5. **WiFi Connection Failed**
    - Verify SSID and password
    - Check WiFi signal strength
    - Ensure 2.4GHz network (ESP32 doesn't support 5GHz)
 
-5. **MQTT Connection Failed**
+6. **MQTT Connection Failed**
    - Check internet connectivity
    - Verify broker address and port
    - Check firewall settings
@@ -208,9 +233,11 @@ WiFi connected
 IP address: 192.168.1.100
 MQTT connected
 Sensor Data:
-Temperature: 23.5 °C
-Pressure: 1013.25 hPa
-Humidity: 45.2 %
+BMP280 Temperature: 23.5 °C
+BMP280 Pressure: 1013.25 hPa
+BMP280 Humidity: 45.2 %
+DHT11 Temperature: 23.2 °C
+DHT11 Humidity: 44.8 %
 Heart Rate: 72 BPM
 SpO2: 98 %
 Flame: SAFE
@@ -226,6 +253,8 @@ Data published to MQTT
 
 ### Environmental Monitoring
 - BMP280 provides temperature, pressure, and humidity
+- DHT11 provides additional temperature and humidity readings
+- Dual sensor setup allows for comparison and redundancy
 - High accuracy and low power consumption
 - Suitable for indoor environmental monitoring
 

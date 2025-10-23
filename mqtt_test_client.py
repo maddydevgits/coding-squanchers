@@ -19,6 +19,8 @@ TOPICS = [
     "sensors/temperature",
     "sensors/pressure", 
     "sensors/humidity",
+    "sensors/dht11_temperature",
+    "sensors/dht11_humidity",
     "sensors/heartrate",
     "sensors/spo2",
     "sensors/flame",
@@ -54,9 +56,11 @@ def on_message(client, userdata, msg):
         try:
             data = json.loads(payload)
             print(f"🕐 {timestamp} - 📊 Combined Sensor Data:")
-            print(f"   🌡️  Temperature: {data.get('temperature', 'N/A')}°C")
-            print(f"   📊 Pressure: {data.get('pressure', 'N/A')} hPa")
-            print(f"   💧 Humidity: {data.get('humidity', 'N/A')}%")
+            print(f"   🌡️  BMP280 Temperature: {data.get('bmp280_temperature', 'N/A')}°C")
+            print(f"   🌡️  DHT11 Temperature: {data.get('dht11_temperature', 'N/A')}°C")
+            print(f"   📊 Pressure: {data.get('bmp280_pressure', 'N/A')} hPa")
+            print(f"   💧 BMP280 Humidity: {data.get('bmp280_humidity', 'N/A')}%")
+            print(f"   💧 DHT11 Humidity: {data.get('dht11_humidity', 'N/A')}%")
             print(f"   ❤️  Heart Rate: {data.get('heartrate', 'N/A')} BPM")
             print(f"   🩸 SpO2: {data.get('spo2', 'N/A')}%")
             print(f"   🔥 Flame: {'🚨 DETECTED' if data.get('flame_detected') else '✅ Safe'}")
@@ -70,6 +74,8 @@ def on_message(client, userdata, msg):
             'Temperature': '🌡️',
             'Pressure': '📊', 
             'Humidity': '💧',
+            'Dht11_Temperature': '🌡️',
+            'Dht11_Humidity': '💧',
             'Heartrate': '❤️',
             'Spo2': '🩸',
             'Flame': '🔥'

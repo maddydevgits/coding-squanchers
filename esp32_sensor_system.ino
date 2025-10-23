@@ -16,6 +16,7 @@
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_BME280.h>
+#include <DHT.h>
 #include "MAX30105.h"
 #include "heartRate.h"
 
@@ -34,12 +35,16 @@ const char* topic_spo2 = "sensors/spo2";
 const char* topic_temperature = "sensors/temperature";
 const char* topic_pressure = "sensors/pressure";
 const char* topic_humidity = "sensors/humidity";
+const char* topic_dht11_temp = "sensors/dht11_temperature";
+const char* topic_dht11_humidity = "sensors/dht11_humidity";
 const char* topic_flame = "sensors/flame";
 const char* topic_status = "sensors/status";
 
 // Pin definitions
 #define FLAME_SENSOR_PIN 34
 #define BUZZER_PIN 25
+#define DHT11_PIN 26
+#define DHT11_TYPE DHT11
 #define OLED_SDA 21
 #define OLED_SCL 22
 #define OLED_RESET -1
@@ -47,6 +52,7 @@ const char* topic_status = "sensors/status";
 // Sensor objects
 MAX30105 particleSensor;
 Adafruit_BME280 bme;
+DHT dht(DHT11_PIN, DHT11_TYPE);
 Adafruit_SSD1306 display(128, 64, &Wire, OLED_RESET);
 
 // WiFi and MQTT clients
@@ -76,6 +82,8 @@ int Num = 100;
 float temperature = 0;
 float pressure = 0;
 float humidity = 0;
+float dht11_temperature = 0;
+float dht11_humidity = 0;
 bool flameDetected = false;
 unsigned long lastSensorRead = 0;
 const unsigned long sensorReadInterval = 2000; // Read sensors every 2 seconds
@@ -101,6 +109,9 @@ void setup() {
   pinMode(FLAME_SENSOR_PIN, INPUT);
   pinMode(BUZZER_PIN, OUTPUT);
   digitalWrite(BUZZER_PIN, LOW);
+  
+  // Initialize DHT11
+  dht.begin();
   
   // Initialize I2C
   Wire.begin(OLED_SDA, OLED_SCL);
@@ -179,6 +190,17 @@ void readSensors() {
   pressure = bme.readPressure() / 100.0F; // Convert to hPa
   humidity = bme.readHumidity();
   
+  // Read DHT11 data
+  dht11_temperature = dht.readTemperature();
+  dht11_humidity = dht.readHumidity();
+  
+  // Check if DHT11 readings are valid
+  if (isnan(dht11_temperature) || isnan(dht11_humidity)) {
+    Serial.println("Failed to read from DHT11 sensor!");
+    dht11_temperature = 0;
+    dht11_humidity = 0;
+  }
+  
   // Read MAX30102 data
   long irValue = particleSensor.getIR();
   long redValue = particleSensor.getRed();
@@ -220,9 +242,11 @@ void readSensors() {
   flameDetected = digitalRead(FLAME_SENSOR_PIN) == LOW; // Assuming active LOW
   
   Serial.println("Sensor Data:");
-  Serial.println("Temperature: " + String(temperature) + " °C");
-  Serial.println("Pressure: " + String(pressure) + " hPa");
-  Serial.println("Humidity: " + String(humidity) + " %");
+  Serial.println("BMP280 Temperature: " + String(temperature) + " °C");
+  Serial.println("BMP280 Pressure: " + String(pressure) + " hPa");
+  Serial.println("BMP280 Humidity: " + String(humidity) + " %");
+  Serial.println("DHT11 Temperature: " + String(dht11_temperature) + " °C");
+  Serial.println("DHT11 Humidity: " + String(dht11_humidity) + " %");
   Serial.println("Heart Rate: " + String(beatAvg) + " BPM");
   Serial.println("SpO2: " + String(ESpO2) + " %");
   Serial.println("Flame: " + String(flameDetected ? "DETECTED" : "SAFE"));
@@ -249,11 +273,10 @@ void updateDisplay() {
   display.setCursor(0,0);
   
   display.println("ESP32 Sensor System");
-  display.println("Temp: " + String(temperature, 1) + "C");
+  display.println("BMP280: " + String(temperature, 1) + "C " + String(humidity, 1) + "%");
+  display.println("DHT11: " + String(dht11_temperature, 1) + "C " + String(dht11_humidity, 1) + "%");
   display.println("Press: " + String(pressure, 1) + "hPa");
-  display.println("Hum: " + String(humidity, 1) + "%");
-  display.println("HR: " + String(beatAvg) + " BPM");
-  display.println("SpO2: " + String(ESpO2) + "%");
+  display.println("HR: " + String(beatAvg) + " SpO2: " + String(ESpO2) + "%");
   display.println("Flame: " + String(flameDetected ? "ALERT!" : "OK"));
   
   display.display();
@@ -265,15 +288,19 @@ void publishData() {
     client.publish(topic_temperature, String(temperature).c_str());
     client.publish(topic_pressure, String(pressure).c_str());
     client.publish(topic_humidity, String(humidity).c_str());
+    client.publish(topic_dht11_temp, String(dht11_temperature).c_str());
+    client.publish(topic_dht11_humidity, String(dht11_humidity).c_str());
     client.publish(topic_heartrate, String(beatAvg).c_str());
     client.publish(topic_spo2, String(ESpO2).c_str());
     client.publish(topic_flame, String(flameDetected).c_str());
     
     // Publish combined JSON data
     String jsonData = "{";
-    jsonData += "\"temperature\":" + String(temperature) + ",";
-    jsonData += "\"pressure\":" + String(pressure) + ",";
-    jsonData += "\"humidity\":" + String(humidity) + ",";
+    jsonData += "\"bmp280_temperature\":" + String(temperature) + ",";
+    jsonData += "\"bmp280_pressure\":" + String(pressure) + ",";
+    jsonData += "\"bmp280_humidity\":" + String(humidity) + ",";
+    jsonData += "\"dht11_temperature\":" + String(dht11_temperature) + ",";
+    jsonData += "\"dht11_humidity\":" + String(dht11_humidity) + ",";
     jsonData += "\"heartrate\":" + String(beatAvg) + ",";
     jsonData += "\"spo2\":" + String(ESpO2) + ",";
     jsonData += "\"flame_detected\":" + String(flameDetected ? "true" : "false") + ",";
