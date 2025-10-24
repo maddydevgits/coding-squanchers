@@ -1,4 +1,4 @@
-# ESP32 Multi-Sensor System
+# ESP32 SmartBed Multi-Sensor System
 
 A comprehensive IoT sensor system using ESP32 with multiple sensors for health monitoring and environmental sensing, featuring MQTT data publishing to HiveMQ broker.
 

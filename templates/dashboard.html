@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBed Dashboard - Sleep Pattern Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sleep-blue': '#1e3a8a',
+                        'sleep-purple': '#7c3aed',
+                        'sleep-indigo': '#4338ca',
+                        'sleep-teal': '#0d9488',
+                        'sleep-emerald': '#059669',
+                        'sleep-red': '#dc2626',
+                        'sleep-yellow': '#d97706'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .sleep-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #0d9488 100%);
+        }
+        .breathing-animation {
+            animation: breathing 3s ease-in-out infinite;
+        }
+        @keyframes breathing {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .sleep-wave {
+            animation: wave 4s ease-in-out infinite;
+        }
+        @keyframes wave {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-sleep-blue rounded-full flex items-center justify-center">
+                        <i class="fas fa-moon text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-bold text-sleep-blue">SmartBed</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-gray-700 hover:text-sleep-blue font-medium">Home</a>
+                    <a href="/dashboard" class="text-sleep-blue font-medium border-b-2 border-sleep-blue">Dashboard</a>
+                    <a href="/analytics" class="text-gray-700 hover:text-sleep-blue font-medium">Analytics</a>
+                    <a href="/about" class="text-gray-700 hover:text-sleep-blue font-medium">About</a>
+                    <a href="/contact" class="text-gray-700 hover:text-sleep-blue font-medium">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-2 space-y-2">
+                <a href="/" class="block py-2 text-gray-700 hover:text-sleep-blue">Home</a>
+                <a href="/dashboard" class="block py-2 text-sleep-blue font-medium">Dashboard</a>
+                <a href="/analytics" class="block py-2 text-gray-700 hover:text-sleep-blue">Analytics</a>
+                <a href="/about" class="block py-2 text-gray-700 hover:text-sleep-blue">About</a>
+                <a href="/contact" class="block py-2 text-gray-700 hover:text-sleep-blue">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="sleep-gradient text-white shadow-lg pt-20">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center breathing-animation">
+                        <i class="fas fa-bed text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold">Sleep Monitoring Dashboard</h1>
+                        <p class="text-blue-100 text-lg">Real-time Sleep Pattern Analysis & Health Monitoring</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-blue-100">Last Updated</div>
+                    <div id="last-updated" class="text-xl font-semibold">--:--:--</div>
+                    <div class="flex items-center space-x-2 mt-2">
+                        <div id="connection-status" class="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <span class="text-sm">MQTT Connection</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Sleep Status Alert -->
+        <div id="sleep-alert" class="hidden bg-gradient-to-r from-sleep-red to-red-600 text-white px-6 py-4 rounded-xl mb-6 shadow-lg">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-triangle text-2xl mr-4"></i>
+                <div>
+                    <strong>Sleep Alert!</strong> Abnormal sleep patterns detected. Consider checking your environment.
+                </div>
+            </div>
+        </div>
+
+        <!-- Sleep Quality Overview -->
+        <section class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-star text-sleep-yellow text-3xl mr-3"></i>
+                Sleep Quality Overview
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Sleep Score -->
+                <div class="bg-gradient-to-br from-sleep-emerald to-green-600 rounded-xl p-6 text-white shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold">Sleep Score</h3>
+                            <div class="text-4xl font-bold mt-2" id="sleep-score">92</div>
+                            <p class="text-sm text-green-100 mt-1">Excellent</p>
+                        </div>
+                        <div class="text-6xl text-white/30">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="w-full bg-white/20 rounded-full h-2">
+                            <div id="sleep-score-bar" class="bg-white h-2 rounded-full transition-all duration-500" style="width: 92%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sleep Duration -->
+                <div class="bg-gradient-to-br from-sleep-blue to-blue-600 rounded-xl p-6 text-white shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold">Sleep Duration</h3>
+                            <div class="text-4xl font-bold mt-2" id="sleep-duration">8.2</div>
+                            <p class="text-sm text-blue-100 mt-1">Hours</p>
+                        </div>
+                        <div class="text-6xl text-white/30">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deep Sleep -->
+                <div class="bg-gradient-to-br from-sleep-purple to-purple-600 rounded-xl p-6 text-white shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold">Deep Sleep</h3>
+                            <div class="text-4xl font-bold mt-2" id="deep-sleep">2.1</div>
+                            <p class="text-sm text-purple-100 mt-1">Hours (26%)</p>
+                        </div>
+                        <div class="text-6xl text-white/30">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sleep Efficiency -->
+                <div class="bg-gradient-to-br from-sleep-teal to-teal-600 rounded-xl p-6 text-white shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold">Sleep Efficiency</h3>
+                            <div class="text-4xl font-bold mt-2" id="sleep-efficiency">87</div>
+                            <p class="text-sm text-teal-100 mt-1">%</p>
+                        </div>
+                        <div class="text-6xl text-white/30">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vital Signs Monitoring -->
+        <section class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-heartbeat text-sleep-red text-3xl mr-3"></i>
+                Vital Signs During Sleep
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Heart Rate -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-sleep-red">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">Heart Rate</h3>
+                            <div class="text-4xl font-bold text-sleep-red mt-2" id="heart-rate">--</div>
+                            <p class="text-sm text-gray-500 mt-1">Beats per minute</p>
+                            <div class="mt-2">
+                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Normal Range</span>
+                            </div>
+                        </div>
+                        <div class="text-6xl text-sleep-red opacity-20 sleep-wave">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="heart-rate-bar" class="bg-sleep-red h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blood Oxygen -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-sleep-blue">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">Blood Oxygen</h3>
+                            <div class="text-4xl font-bold text-sleep-blue mt-2" id="spo2">--</div>
+                            <p class="text-sm text-gray-500 mt-1">SpO2 percentage</p>
+                            <div class="mt-2">
+                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Optimal</span>
+                            </div>
+                        </div>
+                        <div class="text-6xl text-sleep-blue opacity-20 breathing-animation">
+                            <i class="fas fa-lungs"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="spo2-bar" class="bg-sleep-blue h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Respiratory Rate -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-sleep-teal">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">Respiratory Rate</h3>
+                            <div class="text-4xl font-bold text-sleep-teal mt-2" id="respiratory-rate">16</div>
+                            <p class="text-sm text-gray-500 mt-1">Breaths per minute</p>
+                            <div class="mt-2">
+                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Normal</span>
+                            </div>
+                        </div>
+                        <div class="text-6xl text-sleep-teal opacity-20 breathing-animation">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sleep Environment -->
+        <section class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-home text-sleep-indigo text-3xl mr-3"></i>
+                Sleep Environment
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Temperature -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-sleep-yellow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">Room Temperature</h3>
+                            <div class="text-3xl font-bold text-sleep-yellow mt-2" id="room-temp">--</div>
+                            <p class="text-sm text-gray-500 mt-1">°C</p>
+                            <div class="mt-2">
+                                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Optimal</span>
+                            </div>
+                        </div>
+                        <div class="text-4xl text-sleep-yellow opacity-20">
+                            <i class="fas fa-thermometer-half"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Humidity -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-sleep-teal">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">Humidity</h3>
+                            <div class="text-3xl font-bold text-sleep-teal mt-2" id="humidity">--</div>
+                            <p class="text-sm text-gray-500 mt-1">%</p>
+                            <div class="mt-2">
+                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Comfortable</span>
+                            </div>
+                        </div>
+                        <div class="text-4xl text-sleep-teal opacity-20">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Air Pressure -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-sleep-purple">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">Air Pressure</h3>
+                            <div class="text-3xl font-bold text-sleep-purple mt-2" id="air-pressure">--</div>
+                            <p class="text-sm text-gray-500 mt-1">hPa</p>
+                            <div class="mt-2">
+                                <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">Normal</span>
+                            </div>
+                        </div>
+                        <div class="text-4xl text-sleep-purple opacity-20">
+                            <i class="fas fa-compress-arrows-alt"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Noise Level -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-sleep-indigo">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">Noise Level</h3>
+                            <div class="text-3xl font-bold text-sleep-indigo mt-2" id="noise-level">32</div>
+                            <p class="text-sm text-gray-500 mt-1">dB</p>
+                            <div class="mt-2">
+                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Quiet</span>
+                            </div>
+                        </div>
+                        <div class="text-4xl text-sleep-indigo opacity-20">
+                            <i class="fas fa-volume-down"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Safety & Alerts -->
+        <section class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-shield-alt text-sleep-red text-3xl mr-3"></i>
+                Safety & Alerts
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Fire Detection -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-sleep-red">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">Fire Detection</h3>
+                            <div class="text-4xl font-bold mt-2" id="fire-status">SAFE</div>
+                            <p class="text-sm text-gray-500 mt-1">Flame sensor status</p>
+                            <div class="mt-2">
+                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">No Threats</span>
+                            </div>
+                        </div>
+                        <div class="text-6xl text-sleep-red opacity-20" id="fire-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Status -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-sleep-emerald">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">System Status</h3>
+                            <div class="text-4xl font-bold text-sleep-emerald mt-2" id="system-status">ONLINE</div>
+                            <p class="text-sm text-gray-500 mt-1">All systems operational</p>
+                            <div class="mt-2">
+                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Healthy</span>
+                            </div>
+                        </div>
+                        <div class="text-6xl text-sleep-emerald opacity-20">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sleep Analytics Charts -->
+        <section class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-chart-line text-sleep-purple text-3xl mr-3"></i>
+                Sleep Analytics
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Sleep Stages Chart -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Sleep Stages Distribution</h3>
+                    <canvas id="sleepStagesChart" width="400" height="300"></canvas>
+                </div>
+
+                <!-- Heart Rate Trend -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Heart Rate During Sleep</h3>
+                    <canvas id="heartRateChart" width="400" height="300"></canvas>
+                </div>
+
+                <!-- Temperature Trend -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Room Temperature Trend</h3>
+                    <canvas id="temperatureChart" width="400" height="300"></canvas>
+                </div>
+
+                <!-- Sleep Quality Trend -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Sleep Quality Over Time</h3>
+                    <canvas id="sleepQualityChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex items-center justify-center space-x-2 mb-4">
+                <div class="w-8 h-8 bg-sleep-blue rounded-full flex items-center justify-center">
+                    <i class="fas fa-moon text-white"></i>
+                </div>
+                <span class="text-xl font-bold">SmartBed</span>
+            </div>
+            <p>&copy; 2024 SmartBed. Advanced sleep pattern analysis platform.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let sleepStagesChart, heartRateChart, temperatureChart, sleepQualityChart;
+        let isConnected = false;
+
+        // Initialize charts
+        function initCharts() {
+            // Sleep Stages Chart
+            const sleepStagesCtx = document.getElementById('sleepStagesChart').getContext('2d');
+            sleepStagesChart = new Chart(sleepStagesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Deep Sleep', 'Light Sleep', 'REM Sleep', 'Awake'],
+                    datasets: [{
+                        data: [26, 45, 23, 6],
+                        backgroundColor: [
+                            '#7c3aed',
+                            '#3b82f6',
+                            '#06b6d4',
+                            '#f59e0b'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Heart Rate Chart
+            const hrCtx = document.getElementById('heartRateChart').getContext('2d');
+            heartRateChart = new Chart(hrCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Heart Rate',
+                        data: [],
+                        borderColor: '#dc2626',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Heart Rate (BPM)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Temperature Chart
+            const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+            temperatureChart = new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Room Temperature',
+                        data: [],
+                        borderColor: '#d97706',
+                        backgroundColor: 'rgba(217, 119, 6, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Sleep Quality Chart
+            const qualityCtx = document.getElementById('sleepQualityChart').getContext('2d');
+            sleepQualityChart = new Chart(qualityCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Sleep Quality Score',
+                        data: [85, 92, 78, 88, 95, 90, 87],
+                        backgroundColor: 'rgba(124, 58, 237, 0.8)',
+                        borderColor: '#7c3aed',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Quality Score'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update dashboard with new data
+        function updateDashboard(data) {
+            // Update vital signs
+            document.getElementById('heart-rate').textContent = data.heartrate || '--';
+            document.getElementById('spo2').textContent = data.spo2 || '--';
+            
+            // Update progress bars
+            const heartRateBar = document.getElementById('heart-rate-bar');
+            const spo2Bar = document.getElementById('spo2-bar');
+            
+            if (data.heartrate) {
+                const hrPercent = Math.min((data.heartrate / 200) * 100, 100);
+                heartRateBar.style.width = hrPercent + '%';
+            }
+            
+            if (data.spo2) {
+                const spo2Percent = (data.spo2 / 100) * 100;
+                spo2Bar.style.width = spo2Percent + '%';
+            }
+
+            // Update environment
+            const avgTemp = data.bmp280_temperature || data.dht11_temperature || 0;
+            const avgHumidity = data.bmp280_humidity || data.dht11_humidity || 0;
+            
+            document.getElementById('room-temp').textContent = avgTemp ? avgTemp.toFixed(1) : '--';
+            document.getElementById('humidity').textContent = avgHumidity ? avgHumidity.toFixed(1) : '--';
+            document.getElementById('air-pressure').textContent = data.bmp280_pressure ? data.bmp280_pressure.toFixed(1) : '--';
+
+            // Update safety monitoring
+            const fireStatus = document.getElementById('fire-status');
+            const fireIcon = document.getElementById('fire-icon');
+            const sleepAlert = document.getElementById('sleep-alert');
+            
+            if (data.flame_detected) {
+                fireStatus.textContent = 'ALERT!';
+                fireStatus.className = 'text-4xl font-bold text-sleep-red mt-2';
+                fireIcon.className = 'text-6xl text-sleep-red pulse-animation';
+                sleepAlert.classList.remove('hidden');
+            } else {
+                fireStatus.textContent = 'SAFE';
+                fireStatus.className = 'text-4xl font-bold text-sleep-emerald mt-2';
+                fireIcon.className = 'text-6xl text-sleep-red opacity-20';
+                sleepAlert.classList.add('hidden');
+            }
+
+            // Update timestamp
+            if (data.last_updated) {
+                const date = new Date(data.last_updated);
+                document.getElementById('last-updated').textContent = date.toLocaleTimeString();
+            }
+
+            // Update charts
+            updateCharts(data);
+        }
+
+        // Update charts with new data
+        function updateCharts(data) {
+            const now = new Date().toLocaleTimeString();
+            
+            // Update heart rate chart
+            if (data.heartrate) {
+                heartRateChart.data.labels.push(now);
+                heartRateChart.data.datasets[0].data.push(data.heartrate);
+                
+                if (heartRateChart.data.labels.length > 20) {
+                    heartRateChart.data.labels.shift();
+                    heartRateChart.data.datasets[0].data.shift();
+                }
+                
+                heartRateChart.update('none');
+            }
+
+            // Update temperature chart
+            const avgTemp = data.bmp280_temperature || data.dht11_temperature;
+            if (avgTemp) {
+                temperatureChart.data.labels.push(now);
+                temperatureChart.data.datasets[0].data.push(avgTemp);
+                
+                if (temperatureChart.data.labels.length > 20) {
+                    temperatureChart.data.labels.shift();
+                    temperatureChart.data.datasets[0].data.shift();
+                }
+                
+                temperatureChart.update('none');
+            }
+        }
+
+        // Fetch latest data from API
+        async function fetchLatestData() {
+            try {
+                const response = await fetch('/api/latest-data');
+                const data = await response.json();
+                
+                if (data && Object.keys(data).length > 0) {
+                    updateDashboard(data);
+                    updateConnectionStatus(true);
+                } else {
+                    updateConnectionStatus(false);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                updateConnectionStatus(false);
+            }
+        }
+
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connection-status');
+            isConnected = connected;
+            
+            if (connected) {
+                statusElement.className = 'w-3 h-3 bg-green-500 rounded-full';
+            } else {
+                statusElement.className = 'w-3 h-3 bg-red-500 rounded-full';
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+            fetchLatestData();
+            
+            // Update data every 2 seconds
+            setInterval(fetchLatestData, 2000);
+
+            // Mobile menu toggle
+            document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+                const menu = document.getElementById('mobile-menu');
+                menu.classList.toggle('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

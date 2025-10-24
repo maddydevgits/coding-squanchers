@@ -1,1 +1,5 @@
 paho-mqtt==1.6.1
+Flask==2.3.3
+Flask-PyMongo==2.3.0
+pymongo==4.5.0
+python-dotenv==1.0.0

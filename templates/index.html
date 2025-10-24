@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBed - Advanced Sleep Pattern Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sleep-blue': '#1e3a8a',
+                        'sleep-purple': '#7c3aed',
+                        'sleep-indigo': '#4338ca',
+                        'sleep-teal': '#0d9488',
+                        'sleep-emerald': '#059669'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sleep-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #0d9488 100%);
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .pulse-slow {
+            animation: pulse 4s infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-sleep-blue rounded-full flex items-center justify-center">
+                        <i class="fas fa-moon text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-bold text-sleep-blue">SmartBed</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-gray-700 hover:text-sleep-blue font-medium">Home</a>
+                    <a href="/dashboard" class="text-gray-700 hover:text-sleep-blue font-medium">Dashboard</a>
+                    <a href="/analytics" class="text-gray-700 hover:text-sleep-blue font-medium">Analytics</a>
+                    <a href="/about" class="text-gray-700 hover:text-sleep-blue font-medium">About</a>
+                    <a href="/contact" class="text-gray-700 hover:text-sleep-blue font-medium">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-2 space-y-2">
+                <a href="/" class="block py-2 text-gray-700 hover:text-sleep-blue">Home</a>
+                <a href="/dashboard" class="block py-2 text-gray-700 hover:text-sleep-blue">Dashboard</a>
+                <a href="/analytics" class="block py-2 text-gray-700 hover:text-sleep-blue">Analytics</a>
+                <a href="/about" class="block py-2 text-gray-700 hover:text-sleep-blue">About</a>
+                <a href="/contact" class="block py-2 text-gray-700 hover:text-sleep-blue">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="sleep-gradient min-h-screen flex items-center pt-20">
+        <div class="container mx-auto px-4 py-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="text-white">
+                    <h1 class="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                        Advanced Sleep
+                        <span class="text-yellow-300">Pattern Analysis</span>
+                    </h1>
+                    <p class="text-xl mb-8 text-blue-100 leading-relaxed">
+                        Monitor your sleep quality, track patterns, and optimize your rest with our intelligent sleep analysis platform powered by real-time sensor data.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="/dashboard" class="bg-white text-sleep-blue px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-center">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            View Dashboard
+                        </a>
+                        <a href="/analytics" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-sleep-blue transition-colors text-center">
+                            <i class="fas fa-brain mr-2"></i>
+                            Sleep Analytics
+                        </a>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="floating">
+                        <div class="bg-white/20 backdrop-blur-lg rounded-3xl p-8 shadow-2xl">
+                            <div class="text-center text-white">
+                                <div class="w-24 h-24 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <i class="fas fa-bed text-4xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold mb-4">Real-time Monitoring</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span>Heart Rate</span>
+                                        <span class="font-bold">72 BPM</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>SpO2</span>
+                                        <span class="font-bold">98%</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Sleep Quality</span>
+                                        <span class="font-bold text-green-300">Excellent</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Comprehensive Sleep Analysis</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Our platform combines advanced sensor technology with intelligent analytics to provide deep insights into your sleep patterns and health.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-gradient-to-br from-sleep-blue to-sleep-purple rounded-xl p-8 text-white">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-heartbeat text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Health Monitoring</h3>
+                    <p class="text-blue-100 mb-6">
+                        Continuous monitoring of heart rate, blood oxygen levels, and vital signs during sleep.
+                    </p>
+                    <ul class="space-y-2 text-sm">
+                        <li><i class="fas fa-check mr-2"></i>Real-time heart rate tracking</li>
+                        <li><i class="fas fa-check mr-2"></i>SpO2 monitoring</li>
+                        <li><i class="fas fa-check mr-2"></i>Sleep stage detection</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-gradient-to-br from-sleep-teal to-sleep-emerald rounded-xl p-8 text-white">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-thermometer-half text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Environment Analysis</h3>
+                    <p class="text-teal-100 mb-6">
+                        Monitor room temperature, humidity, and air quality to optimize your sleep environment.
+                    </p>
+                    <ul class="space-y-2 text-sm">
+                        <li><i class="fas fa-check mr-2"></i>Temperature tracking</li>
+                        <li><i class="fas fa-check mr-2"></i>Humidity monitoring</li>
+                        <li><i class="fas fa-check mr-2"></i>Air pressure analysis</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-gradient-to-br from-sleep-purple to-sleep-indigo rounded-xl p-8 text-white">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-brain text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">AI-Powered Insights</h3>
+                    <p class="text-purple-100 mb-6">
+                        Advanced machine learning algorithms analyze your sleep patterns and provide personalized recommendations.
+                    </p>
+                    <ul class="space-y-2 text-sm">
+                        <li><i class="fas fa-check mr-2"></i>Sleep quality scoring</li>
+                        <li><i class="fas fa-check mr-2"></i>Pattern recognition</li>
+                        <li><i class="fas fa-check mr-2"></i>Personalized recommendations</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl p-8 text-white">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-shield-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Safety Monitoring</h3>
+                    <p class="text-yellow-100 mb-6">
+                        Advanced fire detection and safety systems ensure your sleep environment is secure.
+                    </p>
+                    <ul class="space-y-2 text-sm">
+                        <li><i class="fas fa-check mr-2"></i>Fire detection</li>
+                        <li><i class="fas fa-check mr-2"></i>Emergency alerts</li>
+                        <li><i class="fas fa-check mr-2"></i>Safety notifications</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl p-8 text-white">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-line text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Detailed Analytics</h3>
+                    <p class="text-pink-100 mb-6">
+                        Comprehensive reports and visualizations to track your sleep improvement over time.
+                    </p>
+                    <ul class="space-y-2 text-sm">
+                        <li><i class="fas fa-check mr-2"></i>Sleep trend analysis</li>
+                        <li><i class="fas fa-check mr-2"></i>Historical data</li>
+                        <li><i class="fas fa-check mr-2"></i>Export capabilities</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl p-8 text-white">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-mobile-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Mobile Access</h3>
+                    <p class="text-indigo-100 mb-6">
+                        Access your sleep data anywhere with our responsive web platform and mobile-optimized interface.
+                    </p>
+                    <ul class="space-y-2 text-sm">
+                        <li><i class="fas fa-check mr-2"></i>Responsive design</li>
+                        <li><i class="fas fa-check mr-2"></i>Real-time updates</li>
+                        <li><i class="fas fa-check mr-2"></i>Push notifications</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-20 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Sleep Quality Metrics</h2>
+                <p class="text-xl text-gray-600">Track your sleep improvement with key performance indicators</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white rounded-xl p-8 text-center shadow-lg">
+                    <div class="w-16 h-16 bg-sleep-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-moon text-sleep-blue text-2xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-sleep-blue mb-2">8.2</h3>
+                    <p class="text-gray-600">Average Sleep Hours</p>
+                </div>
+                
+                <div class="bg-white rounded-xl p-8 text-center shadow-lg">
+                    <div class="w-16 h-16 bg-sleep-emerald/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-star text-sleep-emerald text-2xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-sleep-emerald mb-2">92%</h3>
+                    <p class="text-gray-600">Sleep Quality Score</p>
+                </div>
+                
+                <div class="bg-white rounded-xl p-8 text-center shadow-lg">
+                    <div class="w-16 h-16 bg-sleep-purple/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-heart text-sleep-purple text-2xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-sleep-purple mb-2">68</h3>
+                    <p class="text-gray-600">Avg Heart Rate (BPM)</p>
+                </div>
+                
+                <div class="bg-white rounded-xl p-8 text-center shadow-lg">
+                    <div class="w-16 h-16 bg-sleep-teal/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-lungs text-sleep-teal text-2xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-sleep-teal mb-2">97%</h3>
+                    <p class="text-gray-600">Blood Oxygen Level</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 sleep-gradient">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl font-bold text-white mb-6">Ready to Optimize Your Sleep?</h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                Start monitoring your sleep patterns today and discover insights that will transform your rest and recovery.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/dashboard" class="bg-white text-sleep-blue px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-play mr-2"></i>
+                    Start Monitoring
+                </a>
+                <a href="/about" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-sleep-blue transition-colors">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-sleep-blue rounded-full flex items-center justify-center">
+                            <i class="fas fa-moon text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">SmartBed</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        Advanced sleep pattern analysis platform for better rest and health.
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Platform</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/dashboard" class="hover:text-white">Dashboard</a></li>
+                        <li><a href="/analytics" class="hover:text-white">Analytics</a></li>
+                        <li><a href="/about" class="hover:text-white">About</a></li>
+                        <li><a href="/contact" class="hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Features</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Health Monitoring</li>
+                        <li>Environment Analysis</li>
+                        <li>AI Insights</li>
+                        <li>Safety Alerts</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Connect</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 SleepSense. All rights reserved. Advanced sleep analysis platform.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

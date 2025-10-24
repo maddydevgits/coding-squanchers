@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact SmartBed - Get Support & Information</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sleep-blue': '#1e3a8a',
+                        'sleep-purple': '#7c3aed',
+                        'sleep-indigo': '#4338ca',
+                        'sleep-teal': '#0d9488',
+                        'sleep-emerald': '#059669',
+                        'sleep-red': '#dc2626',
+                        'sleep-yellow': '#d97706'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sleep-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #0d9488 100%);
+        }
+        .form-input {
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .contact-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-sleep-blue rounded-full flex items-center justify-center">
+                        <i class="fas fa-moon text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-bold text-sleep-blue">SmartBed</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-gray-700 hover:text-sleep-blue font-medium">Home</a>
+                    <a href="/dashboard" class="text-gray-700 hover:text-sleep-blue font-medium">Dashboard</a>
+                    <a href="/analytics" class="text-gray-700 hover:text-sleep-blue font-medium">Analytics</a>
+                    <a href="/about" class="text-gray-700 hover:text-sleep-blue font-medium">About</a>
+                    <a href="/contact" class="text-sleep-blue font-medium border-b-2 border-sleep-blue">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-2 space-y-2">
+                <a href="/" class="block py-2 text-gray-700 hover:text-sleep-blue">Home</a>
+                <a href="/dashboard" class="block py-2 text-gray-700 hover:text-sleep-blue">Dashboard</a>
+                <a href="/analytics" class="block py-2 text-gray-700 hover:text-sleep-blue">Analytics</a>
+                <a href="/about" class="block py-2 text-gray-700 hover:text-sleep-blue">About</a>
+                <a href="/contact" class="block py-2 text-sleep-blue font-medium">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="sleep-gradient text-white pt-20">
+        <div class="container mx-auto px-4 py-16">
+            <div class="text-center">
+                <h1 class="text-5xl font-bold mb-6">Contact Us</h1>
+                <p class="text-xl text-blue-100 max-w-3xl mx-auto">
+                    Get in touch with our team for support, questions, or to learn more about SleepSense technology
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form & Info Section -->
+    <section class="py-20">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">Send us a Message</h2>
+                    <form id="contact-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="first-name" class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+                                <input type="text" id="first-name" name="first-name" required
+                                       class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sleep-blue focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="last-name" class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+                                <input type="text" id="last-name" name="last-name" required
+                                       class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sleep-blue focus:border-transparent">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                            <input type="email" id="email" name="email" required
+                                   class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sleep-blue focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label for="subject" class="block text-sm font-semibold text-gray-700 mb-2">Subject</label>
+                            <select id="subject" name="subject" required
+                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sleep-blue focus:border-transparent">
+                                <option value="">Select a subject</option>
+                                <option value="technical-support">Technical Support</option>
+                                <option value="product-inquiry">Product Inquiry</option>
+                                <option value="partnership">Partnership</option>
+                                <option value="feedback">Feedback</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="message" class="block text-sm font-semibold text-gray-700 mb-2">Message</label>
+                            <textarea id="message" name="message" rows="6" required
+                                      class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sleep-blue focus:border-transparent resize-none"></textarea>
+                        </div>
+                        
+                        <button type="submit" 
+                                class="w-full bg-sleep-blue text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="space-y-8">
+                    <!-- Contact Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Email -->
+                        <div class="contact-card bg-gradient-to-br from-sleep-blue to-blue-600 rounded-xl p-6 text-white">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-envelope text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold">Email</h3>
+                                    <p class="text-blue-100">General inquiries</p>
+                                </div>
+                            </div>
+                            <p class="text-sm">support@smartbed.com</p>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="contact-card bg-gradient-to-br from-sleep-emerald to-green-600 rounded-xl p-6 text-white">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-phone text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold">Phone</h3>
+                                    <p class="text-green-100">Technical support</p>
+                                </div>
+                            </div>
+                            <p class="text-sm">+1 (555) 123-4567</p>
+                        </div>
+
+                        <!-- Live Chat -->
+                        <div class="contact-card bg-gradient-to-br from-sleep-purple to-purple-600 rounded-xl p-6 text-white">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-comments text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold">Live Chat</h3>
+                                    <p class="text-purple-100">Instant support</p>
+                                </div>
+                            </div>
+                            <p class="text-sm">Available 24/7</p>
+                        </div>
+
+                        <!-- Office -->
+                        <div class="contact-card bg-gradient-to-br from-sleep-teal to-teal-600 rounded-xl p-6 text-white">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-building text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold">Office</h3>
+                                    <p class="text-teal-100">Visit us</p>
+                                </div>
+                            </div>
+                            <p class="text-sm">123 Tech Street<br>San Francisco, CA</p>
+                        </div>
+                    </div>
+
+                    <!-- Support Hours -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-clock text-sleep-blue mr-3"></i>
+                            Support Hours
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Monday - Friday</span>
+                                <span class="font-semibold text-gray-800">9:00 AM - 6:00 PM PST</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Saturday</span>
+                                <span class="font-semibold text-gray-800">10:00 AM - 4:00 PM PST</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Sunday</span>
+                                <span class="font-semibold text-gray-800">Emergency Only</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-question-circle text-sleep-yellow mr-3"></i>
+                            Frequently Asked Questions
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-2">How accurate is the sleep analysis?</h4>
+                                <p class="text-gray-600 text-sm">Our sensors provide 95%+ accuracy compared to clinical sleep studies, using advanced algorithms and multiple sensor validation.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-2">Is my data secure?</h4>
+                                <p class="text-gray-600 text-sm">Yes, we use end-to-end encryption and comply with HIPAA standards to protect your privacy and health data.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-2">Can I export my data?</h4>
+                                <p class="text-gray-600 text-sm">Absolutely! You can export your sleep data in CSV, JSON, or PDF formats for personal use or sharing with healthcare providers.</p>
+                            </div>
+                        </div>
+                        <a href="#" class="text-sleep-blue hover:text-blue-700 text-sm font-semibold mt-4 inline-block">
+                            View all FAQs <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Help Resources Section -->
+    <section class="py-20 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Help Resources</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Find answers, guides, and resources to help you get the most out of SleepSense
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Documentation -->
+                <div class="bg-white rounded-xl p-8 text-center shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-sleep-blue/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-book text-sleep-blue text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Documentation</h3>
+                    <p class="text-gray-600 mb-6">Comprehensive guides and technical documentation for setup and usage.</p>
+                    <a href="#" class="text-sleep-blue hover:text-blue-700 font-semibold">
+                        View Docs <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- Video Tutorials -->
+                <div class="bg-white rounded-xl p-8 text-center shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-sleep-emerald/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-play-circle text-sleep-emerald text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Video Tutorials</h3>
+                    <p class="text-gray-600 mb-6">Step-by-step video guides to help you set up and use SleepSense effectively.</p>
+                    <a href="#" class="text-sleep-emerald hover:text-green-700 font-semibold">
+                        Watch Videos <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- Community Forum -->
+                <div class="bg-white rounded-xl p-8 text-center shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-sleep-purple/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-users text-sleep-purple text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Community Forum</h3>
+                    <p class="text-gray-600 mb-6">Connect with other users, share experiences, and get community support.</p>
+                    <a href="#" class="text-sleep-purple hover:text-purple-700 font-semibold">
+                        Join Forum <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- API Reference -->
+                <div class="bg-white rounded-xl p-8 text-center shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-sleep-teal/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-code text-sleep-teal text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">API Reference</h3>
+                    <p class="text-gray-600 mb-6">Developer resources and API documentation for custom integrations.</p>
+                    <a href="#" class="text-sleep-teal hover:text-teal-700 font-semibold">
+                        API Docs <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 sleep-gradient">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl font-bold text-white mb-6">Need Immediate Help?</h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                Our support team is here to help you get the most out of your SleepSense experience.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#" class="bg-white text-sleep-blue px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-comments mr-2"></i>
+                    Start Live Chat
+                </a>
+                <a href="#" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-sleep-blue transition-colors">
+                    <i class="fas fa-phone mr-2"></i>
+                    Call Support
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-sleep-blue rounded-full flex items-center justify-center">
+                            <i class="fas fa-moon text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">SmartBed</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        Advanced sleep pattern analysis platform for better rest and health.
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Platform</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/dashboard" class="hover:text-white">Dashboard</a></li>
+                        <li><a href="/analytics" class="hover:text-white">Analytics</a></li>
+                        <li><a href="/about" class="hover:text-white">About</a></li>
+                        <li><a href="/contact" class="hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white">Community</a></li>
+                        <li><a href="#" class="hover:text-white">Status</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Connect</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 SmartBed. All rights reserved. Advanced sleep analysis platform.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Contact form handling
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Show success message (in a real app, you'd send this to a server)
+            alert('Thank you for your message! We\'ll get back to you within 24 hours.');
+            
+            // Reset form
+            this.reset();
+        });
+
+        // Form input animations
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('transform', 'scale-105');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('transform', 'scale-105');
+            });
+        });
+    </script>
+</body>
+</html>
